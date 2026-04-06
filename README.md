@@ -1,188 +1,158 @@
-# lab7
-## 🔐 Analyse Dynamique Android avec MobSF (DIVA)
+# 🔐 Analyse Dynamique Android avec MobSF (DIVA)
 
-### 📌 Présentation
-
-Ce projet présente une **analyse dynamique complète** d’une application Android en utilisant **MobSF (Mobile Security Framework)**.
-
-L’objectif est d’analyser l’application vulnérable **DIVA (Damn Insecure and Vulnerable App)** dans un environnement contrôlé, en utilisant :
-- Un émulateur Android rooté (AVD)
-- MobSF via Docker
-- Frida pour l’instrumentation
-- Interception du trafic HTTPS
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Android-green?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Tool-MobSF-blue?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Analysis-Dynamic-red?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Status-Completed-success?style=for-the-badge"/>
+</p>
 
 ---
 
-### 🎯 Objectifs
+## 📑 Table des matières
 
-- Comprendre l’analyse **dynamique (runtime)** Android
-- Configurer un **émulateur propre sans Google Play**
-- Utiliser **MobSF avec Docker**
-- Observer le comportement d’une application en temps réel
-- Détecter des vulnérabilités comme :
-  - Stockage non sécurisé
-  - Secrets hardcodés
-  - Intents non protégés
-  - Fuites dans les logs
-
----
-
-### 🧰 Prérequis
-
-#### Matériel
-- Processeur 64 bits
-- Minimum 8 Go de RAM
-- Connexion Internet
-
-#### Logiciels
-- Android Studio (dernière version)
-- Android SDK Platform-Tools (ADB)
-- Docker Desktop
-- Git
+- Présentation
+- Objectifs
+- Prérequis
+- Installation
+- Test avec DIVA
+- Analyse Dynamique
+- Vulnérabilités
+- Frida
+- Dépannage
+- Résultat
+- Améliorations
+- Ressources
+- Auteur
 
 ---
 
-### ⚙️ Installation
+## 📌 Présentation
 
-#### 1. Cloner MobSF
+Analyse dynamique d’une application Android vulnérable avec MobSF, Frida et interception HTTPS.
 
+---
+
+## 🎯 Objectifs
+
+- Comprendre runtime Android  
+- Observer comportement en temps réel  
+- Identifier vulnérabilités  
+- Utiliser Frida  
+- Intercepter trafic  
+
+---
+
+## 🧰 Prérequis
+
+- CPU 64 bits  
+- 8 Go RAM  
+- Android Studio  
+- ADB  
+- Docker  
+- Git  
+
+---
+
+## ⚙️ Installation
+
+### Cloner MobSF
 ```bash
 git clone https://github.com/MobSF/Mobile-Security-Framework-MobSF.git
 cd Mobile-Security-Framework-MobSF
-2. Créer un émulateur Android (AVD)
-Dans Android Studio :
+```
 
-Tools → AVD Manager → Create Virtual Device
+### Créer un AVD
+- Pixel 5  
+- API 29 ou 30  
+- Sans Google Play  
+- x86_64  
 
-Choisir : Pixel 5 (ou similaire)
+Nom : MobSF_DIVA_API_30
 
-Image système :
-
-Android API 29 ou 30
-
-Sans Google Play
-
-Architecture : x86_64
-
-Nom recommandé :
-
-MobSF_DIVA_API_30
-
-##3. Lancer l’émulateur (rooté)
-Linux / Mac
-
-bash
+### Lancer émulateur
+```bash
 ./scripts/start_avd.sh MobSF_DIVA_API_30
-Windows
+```
 
-bash
-scripts\start_avd.ps1 MobSF_DIVA_API_30
-Vérification :
-
-bash
+### Vérifier
+```bash
 adb devices
-Exemple de sortie :
+```
 
-text
-emulator-5554 device
-4. Lancer MobSF avec Docker
-bash
+### Lancer MobSF
+```bash
 docker pull opensecurity/mobile-security-framework-mobsf:latest
-docker run -it --rm -p 8000:8000 \
--e MOBSF_ANALYZER_IDENTIFIER=emulator-5554 \
-opensecurity/mobile-security-framework-mobsf:latest
-⚠️ Remplacez emulator-5554 par votre identifiant réel.
+docker run -it --rm -p 8000:8000 -e MOBSF_ANALYZER_IDENTIFIER=emulator-5554 opensecurity/mobile-security-framework-mobsf:latest
+```
 
-Accès :
+---
 
-text
-http://127.0.0.1:8000
-Identifiants :
+## 📱 Test avec DIVA
 
-text
-Username: mobsf
-Password: mobsf
-📱 Test avec DIVA
-Télécharger l’APK
-text
-http://www.payatu.com/damn-insecure-and-vulnerable-app/
-Analyse
-Aller dans MobSF → Upload & Analyze
+Télécharger APK puis lancer Dynamic Analysis.
 
-Importer diva.apk
+---
 
-Lancer :
+## 🔍 Analyse Dynamique
 
-text
-Dynamic Analysis
-MobSF va automatiquement :
+- Logcat  
+- Network  
+- Frida  
+- File Monitor  
+- Intent Monitor  
 
-Installer l’app
+---
 
-Lancer Frida
+## 🧪 Vulnérabilités
 
-Configurer le proxy HTTPS
+- Stockage en clair  
+- Secrets hardcodés  
+- Trafic non sécurisé  
+- Logs sensibles  
+- Intents exploitables  
 
-Monitorer le comportement
+---
 
-🔍 Analyse Dynamique
-Fonctionnalités utilisées
-📜 Runtime Logs (Logcat)
-
-🌐 Trafic réseau HTTP/HTTPS
-
-🧠 Frida (instrumentation)
-
-📂 File Monitor
-
-🔄 Intent Monitor
-
-🧪 Vulnérabilités détectées
-🔓 Stockage en clair
-
-🔑 Secrets hardcodés
-
-📡 Trafic non sécurisé
-
-📢 Logs sensibles
-
-🔁 Intents exploitables
-
-🧠 Exemple Frida
-javascript
+## 🧠 Exemple Frida
+```javascript
 Java.perform(function() {
     console.log("Hook actif !");
 });
-⚠️ Dépannage
-Problème	Solution
-Dynamic Analysis Failed	Vérifier que l’émulateur est lancé
-adb ne détecte rien	Vérifier adb devices
-Docker ne démarre pas	Vérifier Docker Desktop
-Émulateur lent	Utiliser API 29 x86_64
-📊 Résultat
-MobSF permet :
+```
 
-Une analyse complète (statique + dynamique)
+---
 
-Une interception HTTPS
+## ⚠️ Dépannage
 
-Une instrumentation avancée avec Frida
+- Vérifier émulateur  
+- Vérifier adb  
+- Vérifier Docker  
 
-🚀 Améliorations possibles
-Tester avec :
+---
 
-InsecureBankv2
+## 📊 Résultat
 
-AndroGoat
+Analyse complète dynamique + statique.
 
-Automatiser avec Frida scripts
+---
 
-Intégrer dans CI/CD
+## 🚀 Améliorations
 
-📚 Ressources
-MobSF Docs : https://github.com/MobSF/docs
+- Tester autres apps  
+- Automatiser  
+- CI/CD  
+- AI  
 
-DIVA GitHub : https://github.com/payatu/diva-android
+---
 
-👨‍💻 Auteur
+## 📚 Ressources
+
+- MobSF Docs  
+- DIVA GitHub  
+
+---
+
+## 👨‍💻 Auteur
+
 Ziyad Daber
